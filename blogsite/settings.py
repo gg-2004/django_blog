@@ -1,17 +1,26 @@
 import os
 from pathlib import Path
 from decouple import config
-import dj_database_url
 
-# Base directory
+# --------------------------
+# BASE DIR
+# --------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY
-SECRET_KEY = config('SECRET_KEY', default='unsafe-secret-key')
-DEBUG = config('DEBUG', default=True, cast=bool)
-ALLOWED_HOSTS = ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
+# --------------------------
+# SECRET KEY & DEBUG
+# --------------------------
+SECRET_KEY = config('SECRET_KEY')  # from .env or Render env variable
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-# Application definition
+# --------------------------
+# ALLOWED HOSTS
+# --------------------------
+ALLOWED_HOSTS = ['django-blog-yny3.onrender.com', '127.0.0.1', 'localhost']
+
+# --------------------------
+# INSTALLED APPS
+# --------------------------
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -19,12 +28,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'blog',  # Your blog app
+    # your apps here
+    'blog',
 ]
 
+# --------------------------
+# MIDDLEWARE
+# --------------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files in production
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -33,12 +45,17 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'blogsite.urls'
-
+# --------------------------
+# ROOT URLS
+# --------------------------
+ROOT_URLCONF = 'blogsite.urls' 
+# --------------------------
+# TEMPLATES
+# --------------------------
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'blog' / 'templates'],
+        'DIRS': [BASE_DIR / 'templates'],  
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -51,9 +68,13 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'blogsite.wsgi.application'
-
-# Database
+# --------------------------
+# WSGI
+# --------------------------
+WSGI_APPLICATION = 'blogsite.wsgi.application'  
+# --------------------------
+# DATABASE (default SQLite, change if needed)
+# --------------------------
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -61,30 +82,46 @@ DATABASES = {
     }
 }
 
-# Use PostgreSQL in production (Render)
-if not DEBUG:
-    DATABASES = {
-        'default': dj_database_url.config(default='sqlite:///db.sqlite3', conn_max_age=600)
-    }
-
-# Password validation
+# --------------------------
+# PASSWORD VALIDATION
+# --------------------------
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
 ]
 
-# Internationalization
+# --------------------------
+# INTERNATIONALIZATION
+# --------------------------
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files
+# --------------------------
+# STATIC FILES
+# --------------------------
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # for Render deployment
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
-# Default primary key field type
+# --------------------------
+# DEFAULT PRIMARY KEY FIELD TYPE
+# --------------------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# --------------------------
+# LOGIN REDIRECT
+# --------------------------
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
