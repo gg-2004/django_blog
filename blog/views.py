@@ -2,28 +2,21 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseForbidden
-from django.contrib.auth.models import User
+from django.http import HttpResponseForbidden
 from .models import Post
 from .forms import PostForm
 
-# -----------------------------
 # Home page
-# -----------------------------
 def home(request):
     posts = Post.objects.all().order_by('-created_at')
     return render(request, 'home.html', {'posts': posts})
 
-# -----------------------------
 # Post detail page
-# -----------------------------
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     return render(request, 'post_detail.html', {'post': post})
 
-# -----------------------------
 # Signup
-# -----------------------------
 def signup(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
@@ -35,9 +28,7 @@ def signup(request):
         form = UserCreationForm()
     return render(request, 'signup.html', {'form': form})
 
-# -----------------------------
 # Create post
-# -----------------------------
 @login_required
 def create_post(request):
     if request.method == "POST":
@@ -52,9 +43,7 @@ def create_post(request):
         form = PostForm()
     return render(request, 'create_post.html', {'form': form})
 
-# -----------------------------
 # Edit post
-# -----------------------------
 @login_required
 def edit_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
@@ -70,9 +59,7 @@ def edit_post(request, post_id):
         form = PostForm(instance=post)
     return render(request, 'edit_post.html', {'form': form})
 
-# -----------------------------
 # Delete post
-# -----------------------------
 @login_required
 def delete_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
@@ -83,45 +70,3 @@ def delete_post(request, post_id):
         messages.error(request, "Post deleted 🗑")
         return redirect('home')
     return render(request, 'delete_post.html', {'post': post})
-
-# -----------------------------
-# Temporary: Seed sample posts (for portfolio)
-# -----------------------------
-def seed_posts(request):
-    """
-    Creates demo posts for recruiters to see.
-    Delete after running once.
-    """
-    user, created = User.objects.get_or_create(username="demo_user")
-    if created:
-        user.set_password("demo123")
-        user.is_staff = False  # not admin
-        user.save()
-
-    sample_posts = [
-        ("First Blog", "This is a sample post for your portfolio."),
-        ("Second Blog", "Another example post visible to everyone."),
-        ("Django Deployment Tips", "This is how I deployed my Django blog safely."),
-        ("Why I Love Python", "Python is amazing for building web apps and learning backend development."),
-    ]
-
-    for title, content in sample_posts:
-        Post.objects.get_or_create(title=title, content=content, author=user)
-
-    return HttpResponse("✅ Sample posts created successfully! Visit homepage to see them.")
-
-# -----------------------------
-# Temporary: Create superuser on Render
-# -----------------------------
-def create_render_admin(request):
-    """
-    Creates a superuser on Render. Delete after running once.
-    """
-    if not User.objects.filter(username="admin").exists():
-        User.objects.create_superuser(
-            username="admin",
-            email="admin@example.com",
-            password="admin123"
-        )
-        return HttpResponse("✅ New admin created! Username: admin, Password: admin123")
-    return HttpResponse("⚠️ Admin already exists")
