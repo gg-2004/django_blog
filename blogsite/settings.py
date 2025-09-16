@@ -3,6 +3,7 @@ from pathlib import Path
 from decouple import config
 import dj_database_url
 
+
 # --------------------------
 # BASE DIR
 # --------------------------
