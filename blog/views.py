@@ -2,8 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseForbidden
-from django.contrib.auth.models import User
+from django.http import HttpResponseForbidden
 from .models import Post
 from .forms import PostForm
 
@@ -71,28 +70,3 @@ def delete_post(request, post_id):
         messages.error(request, "Post deleted 🗑")
         return redirect('home')
     return render(request, 'delete_post.html', {'post': post})
-
-# Temporary seed route for sample posts (for portfolio)
-def seed_posts(request):
-    """
-    Creates dummy posts and a demo user to populate your blog for recruiters.
-    Delete this route after use.
-    """
-    # Create demo user if it doesn't exist
-    user, created = User.objects.get_or_create(username="demo_user")
-    if created:
-        user.set_password("demo123")
-        user.save()
-
-    # Create sample posts
-    sample_posts = [
-        ("First Blog", "This is a sample post for your portfolio."),
-        ("Second Blog", "Another example post visible to everyone."),
-        ("Django Deployment Tips", "This is how I deployed my Django blog safely."),
-        ("Why I Love Python", "Python is amazing for building web apps, automating tasks, and learning backend development."),
-    ]
-
-    for title, content in sample_posts:
-        Post.objects.get_or_create(title=title, content=content, author=user)
-
-    return HttpResponse("✅ Sample posts created successfully! Visit your homepage to see them.")
